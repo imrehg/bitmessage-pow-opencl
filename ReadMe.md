@@ -1,13 +1,11 @@
-Bitmessage Proof-of-Work in OpenCL
-----------------------------------
+# Bitmessage Proof-of-Work in OpenCL
 
 Accelerated Proof-of-Work for Bitmessage through OpenCL,
 aiming to target the Parallella/Epiphany platform in particular,
 but also being usable for other OpenCL platforms.
 
 
-License: MIT
-============
+## License: MIT
 
 (unless otherwise noted in the code!)
 
