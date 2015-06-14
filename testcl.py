@@ -132,22 +132,31 @@ if __name__ == "__main__":
 	func = lib.pow
 	func.restype = ctypes.c_ulonglong
 	func.argtypes = [ctypes.c_ulonglong, ctypes.c_char_p]
-	target = 5422721218300L
+	# target = 54227212183000L   #    270337
+	# target = 5422721218300L    #   1980666
+	target = 542272121830L     #   6328179
+	# target = 54227212183L      # 224121278
 	start = time()
 	nonce = func(target, text)
 	totalTimeCPP = time() - start
-	result, = unpack('>Q',hashlib.sha512(hashlib.sha512(pack('>Q',nonce) + initialHash).digest()).digest()[0:8])
-	print nonce
-	assert result <= target, "nonce gives not good enough trial value!"
+	print "Nonce---:", nonce
 	print "C++\n==========="
 	print "Nonce: {}; time: {:2f}; speed: {:.2f} hash/s".format(nonce,
 																totalTimeCPP,
 																nonce/totalTimeCPP)
+	result, = unpack('>Q',hashlib.sha512(hashlib.sha512(pack('>Q',nonce) + initialHash).digest()).digest()[0:8])
+	assert result <= target, "nonce gives not good enough trial value!"
 
+	# for nonce in range(0,4):
+	# 	target, = unpack('>Q',hashlib.sha512(hashlib.sha512(pack('>Q',nonce) + initialHash).digest()).digest()[0:8])
+	# 	print "Output: {}, Nonce: {}".format(nonce, target)
+
+	
 	# start = time()
 	# nonce = _doFastPoW(target, initialHash)
 	# totalTime = time() - start
-	# nonce = _doFastPoW(target, initialHash)
+	# # nonce = _doFastPoW(target, initialHash)
+	# print nonce
 	# print "Python Multiprocessing\n==========="
 	# print "Nonce: {}; time: {:2f}; speed: {:.2f} hash/s".format(nonce[1],
 	# 															totalTime,
