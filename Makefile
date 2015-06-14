@@ -1,5 +1,5 @@
-CXXFLAGS = -g -fPIC -shared -Wall
-LDFLAGS = -I/usr/include/CL -lOpenCL -lcrypto
+CXXFLAGS = -g -O3 -fPIC -shared -Wall
+LDFLAGS = -I/usr/include/CL -lOpenCL
 
 binaries = bmpow.so
 
