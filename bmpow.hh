@@ -1,7 +1,5 @@
 
 extern "C"
 {
-  int pow(int);
-  int intFunct(int);
-  void voidFunct(void);
+  unsigned long long pow(unsigned long long, char* );
 }
