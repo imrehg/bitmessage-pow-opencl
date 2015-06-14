@@ -158,7 +158,7 @@ unsigned long long pow(unsigned long long target, char* string) {
     
     int worksize = 4;		// get this one from the workgroup info later
     unsigned long long startpos = 0;
-    int globamt = worksize * 1000;
+    int globamt = worksize * 8192;
 
     unsigned long long *output;
 
