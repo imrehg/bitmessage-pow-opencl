@@ -5,8 +5,7 @@ CCFLAGS = -g -std=c99 -fPIC -shared -Wall
 #LIBS += -lOpenCL
 
 INCS += -I/usr/local/browndeer/include
-LIBS += -L/usr/local/browndeer/lib -locl -lcoprthr_opencl
-
+LIBS += -L/usr/local/browndeer/lib -lcoprthr_opencl
 
 binaries = bmpow.so
 

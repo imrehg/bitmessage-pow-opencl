@@ -9,7 +9,8 @@
 
 #include "bmpow.h"
 
-#define DEVICE_TYPE CL_DEVICE_TYPE_ALL
+#define DEVICE_TYPE CL_DEVICE_TYPE_ACCELERATOR
+/* #define DEVICE_TYPE CL_DEVICE_TYPE_CPU */
 #define OPENCL_KERNEL_FILE "bitmessage_pow_kernel.cl"
 
 #define PLAINTEXT_LENGTH 72
@@ -24,41 +25,11 @@ typedef struct {
     char v[PLAINTEXT_LENGTH+1];
 } sha512_key;
 
-
-// convert ulonglong to big endian
-// http://stackoverflow.com/a/27770821/171237
-void write64be(char out[8], unsigned long long in)
-{
-    out[0] = in >> 56 & 0xff;
-    out[1] = in >> 48 & 0xff;
-    out[2] = in >> 40 & 0xff;
-    out[3] = in >> 32 & 0xff;
-    out[4] = in >> 24 & 0xff;
-    out[5] = in >> 16 & 0xff;
-    out[6] = in >>  8 & 0xff;
-    out[7] = in >>  0 & 0xff;
-}
-
-// Digest to trial value
-unsigned long long trialFromDigest(unsigned char digest[])
-{
-  unsigned long long trial = 0;
-  trial = ((unsigned long long)digest[0] << 56) +
-          ((unsigned long long)digest[1] << 48) +
-          ((unsigned long long)digest[2] << 40) +
-          ((unsigned long long)digest[3] << 32) +
-          ((unsigned long long)digest[4] << 24) +
-          ((unsigned long long)digest[5] << 16) +
-          ((unsigned long long)digest[6] <<  8) +
-          ((unsigned long long)digest[7]);
-  return trial;
-}
-
 uint64_t proofOfWork(uint64_t target, char* string) {
-  /* From https://code.google.com/p/simple-opencl/ */
+  /* From the complex example at https://code.google.com/p/simple-opencl/ */
   char build_c[4096];
   size_t srcsize;
-  size_t worksize = (2 << 3);
+  size_t worksize = 1;   // adjust this
   cl_int error;
   cl_platform_id platform;
   cl_device_id device;
@@ -76,7 +47,11 @@ uint64_t proofOfWork(uint64_t target, char* string) {
   }
 
   /* Create a memory context for the device we want to use  */
-  cl_context_properties properties[]={CL_CONTEXT_PLATFORM, (cl_context_properties)platform, 0};
+  cl_context_properties properties[3]={
+	(cl_context_properties)CL_CONTEXT_PLATFORM,
+	(cl_context_properties)platform,
+	(cl_context_properties)0
+  };
   cl_context context=clCreateContext(properties, 1, &device, NULL, NULL, &error);
   if (error != CL_SUCCESS) {
     printf("\n Error number %d", error);
@@ -103,6 +78,7 @@ uint64_t proofOfWork(uint64_t target, char* string) {
 
   /* Compile the kernel code (after this we could extract the compiled version) */
   error=clBuildProgram(prog, 0, NULL, "", NULL, NULL);
+  /* error = clBuildProgram(prog, 1 , &device, 0, 0, 0); */
   if ( error != CL_SUCCESS ) {
     printf( "Error on buildProgram " );
     printf("\n Error number %d", error);
@@ -147,8 +123,7 @@ uint64_t proofOfWork(uint64_t target, char* string) {
   }
 
   uint64_t startpos = 0;
-  size_t globamt = worksize * (2 << 12);
-
+  size_t globamt = worksize * 1;  // adjust this
   uint64_t output = 0;
 
   do {
@@ -157,13 +132,12 @@ uint64_t proofOfWork(uint64_t target, char* string) {
       printf("\n Error number %d", error);
     }
 
-    /* Tell the Device, through the command queue, to execute que Kernel */
+    /* Tell the Device, through the command queue, to execute queued Kernel */
     error=clEnqueueNDRangeKernel(cq, k_example, 1, NULL, &globamt, &worksize, 0, NULL, NULL);
     if (error != CL_SUCCESS) {
       printf("\n Error number %d", error);
     }
 
-    /* Read the result back into buf2 */
     error=clEnqueueReadBuffer(cq, dest_buf, CL_FALSE, 0, sizeof(output), &output, 0, NULL, NULL);
     if (error != CL_SUCCESS) {
       printf("\n Error number %d", error);
@@ -176,6 +150,13 @@ uint64_t proofOfWork(uint64_t target, char* string) {
 
     startpos += (uint64_t)globamt;
   } while (output == 0);
+
+  clReleaseKernel(k_example);
+  clReleaseProgram(prog);
+  clReleaseMemObject(hash_buf);
+  clReleaseMemObject(dest_buf);
+  clReleaseCommandQueue(cq);
+  clReleaseContext(context);
 
   return output;
 }
