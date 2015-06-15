@@ -9,6 +9,7 @@
 
 #include "bmpow.h"
 
+/* #define DEVICE_TYPE CL_DEVICE_TYPE_ALL */
 #define DEVICE_TYPE CL_DEVICE_TYPE_ACCELERATOR
 /* #define DEVICE_TYPE CL_DEVICE_TYPE_CPU */
 #define OPENCL_KERNEL_FILE "bitmessage_pow_kernel.cl"
