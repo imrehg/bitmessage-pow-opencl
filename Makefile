@@ -1,12 +1,12 @@
-CXXFLAGS = -g -O3 -fPIC -shared -Wall
+CCFLAGS = -g -O3 -fPIC -shared -Wall
 LDFLAGS = -I/usr/include/CL -lOpenCL
 
 binaries = bmpow.so
 
 all: $(binaries)
 
-bmpow.so: bmpow.cc
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+bmpow.so: bmpow.c
+	$(CC) $(CCFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
 	rm $(binaries)

@@ -9,9 +9,9 @@
 #pragma OPENCL EXTENSION cl_khr_byte_addressable_store : disable
 #endif
 
-#define uint8_t  unsigned char
-#define uint32_t unsigned int
-#define uint64_t unsigned long
+#define uint8_t  uchar
+#define uint32_t uint
+#define uint64_t ulong
 #define SALT_SIZE 0
 
 #define BINARY_SIZE 8
