@@ -70,6 +70,7 @@ uint64_t proofOfWork(uint64_t target, char* string) {
   srcsize = ftell(fil);
   fseek(fil, 0, SEEK_SET);
   src = (char*)malloc(srcsize);
+  fread(src, srcsize, 1, fil);
   fclose(fil);
 
   const char *srcptr[]={src};
