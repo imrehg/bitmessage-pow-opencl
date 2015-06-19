@@ -64,9 +64,12 @@ uint64_t proofOfWork(uint64_t target, char* string) {
   }
 
   /* Read the source kernel code in exmaple.cl as an array of char's */
-  char src[8192];
+  char *src;
   FILE *fil = fopen(OPENCL_KERNEL_FILE,"r");
-  srcsize = fread(src, sizeof src, 1, fil);
+  fseek(fil, 0, SEEK_END);
+  srcsize = ftell(fil);
+  fseek(fil, 0, SEEK_SET);
+  src = (char*)malloc(srcsize);
   fclose(fil);
 
   const char *srcptr[]={src};
